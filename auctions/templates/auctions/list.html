@@ -1,0 +1,195 @@
+{% extends "auctions/layout.html"%} {%block body%}
+
+<div class="row">
+  <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+    <div class="card auction-card h-100">
+      {% if item.image_url %}
+      <img
+        src="{{ item.image_url }}"
+        class="card-img-top auction-image"
+        alt="{{ item.title }}"
+      />
+      {% else %}
+      <div
+        class="card-img-top no-image d-flex align-items-center justify-content-center"
+      >
+        <span class="text-muted">No Image</span>
+      </div>
+      {% endif %}
+
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title">{{ item.title }}</h5>
+        <p class="card-text text-muted mb-2">
+          <small>listed by: <strong>{{ item.owner }}</strong></small>
+        </p>
+        <p class="card-text">{{ item.description|truncatewords:20 }}</p>
+
+        <div class="mt-auto">
+          <div class="row text-center">
+            <div class="col-6">
+              <small class="text-muted">Created:</small><br />
+              <small>{{ item.created_at|date:"M d, Y" }}</small>
+            </div>
+            <div class="col-6">
+              <small class="text-muted">Updated:</small><br />
+              <small>{{ item.updated_at|date:"M d, Y" }}</small>
+            </div>
+          </div>
+
+          <div class="price-section mt-3 p-2 bg-light rounded">
+            <div class="row">
+              <div class="col-6 text-center">
+                <small class="text-muted d-block">Starting Bid</small>
+                <span class="price-text text-secondary"
+                  >${{ item.starting_bid|floatformat:2 }}</span
+                >
+              </div>
+              <div class="col-6 text-center">
+                <small class="text-muted d-block">Current Price</small>
+                {% if item.current_price %}
+                <span class="price-text text-success font-weight-bold"
+                  >${{ item.current_price|floatformat:2 }}</span
+                >
+                {% else %}
+                <span class="price-text text-primary">No bids yet</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="text-center mt-3">
+            {% if item.is_active %}
+            <span class="badge badge-success">Active</span>
+            {% else %}
+            <span class="badge badge-secondary">Inactive</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-3">
+    {% if user.is_authenticated %}
+    <a href="{% url 'watch' item.id %}" class="btn btn-primary btn-sm">
+      {% if item in user.watchlist.all %} Remove From Watch List {%else%} Add to
+      Watch List {%endif%}
+    </a>
+    {% else %}
+    <a href="{% url 'login' %}" class="btn btn-secondary btn-sm">
+      Login to Watch
+    </a>
+    {% endif %}
+  </div>
+  <div class="mt-4">
+    {% if user.is_authenticated %} {% if error %}
+    <div class="alert alert-danger" role="alert">{{ error }}</div>
+    {% endif %}
+    <form
+      action="{% url 'listing_details' item.id %}"
+      method="post"
+      class="card p-3"
+    >
+      {% csrf_token %}
+      <input type="hidden" name="action" value="place_bid" />
+      <h6>Place a Bid</h6>
+      <div class="form-group">
+        {{ form.amount.label_tag }} {{ form.amount }}
+      </div>
+      <input type="submit" value="Place Bid" class="btn btn-success" />
+    </form>
+    {% else %}
+    <p class="text-muted">Please login to place a bid.</p>
+    {% endif %}
+  </div>
+  {% if item.owner == user %}
+  <div class="mt-4">
+    <div class="card border-warning">
+      <div class="card-body text-center">
+        <h6 class="card-title text-warning">
+          <i class="fas fa-crown"></i> Owner Actions
+        </h6>
+        <p class="card-text text-muted mb-3">
+          As the owner of this auction, you can close it at any time.
+        </p>
+        <a href="{% url 'close' item.id %}" class="btn btn-warning btn-lg">
+          <i class="fas fa-gavel"></i> Close Auction
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endif %} {% if item.winner %} {% if item.winner == user %}
+  <div class="mt-4">
+    <div class="card border-warning">
+      <div class="card-body text-center">
+        <h6 class="card-title text-warning">
+          <i class="fas fa-crown"></i> <strong> Winner! </strong>
+        </h6>
+        <p class="card-text text-muted mb-3">You have won the auction!</p>
+      </div>
+    </div>
+  </div>
+  {% endif %} {% endif %}
+
+<!-- Comments Section -->
+<div class="mt-4">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h6 class="mb-0"><i class="fas fa-comments"></i> Comments</h6>
+    </div>
+    <div class="card-body">
+      <!-- Add Comment Form -->
+      {% if user.is_authenticated %}
+        <form action="{% url 'listing_details' item.id %}" method="post" class="mb-4">
+          {% csrf_token %}
+          <input type="hidden" value="place_comment" name="action" />
+          
+          <div class="form-group">
+            <label for="{{ comment_form.content.id_for_label }}" class="font-weight-bold">
+              Add your comment:
+            </label>
+            {{ comment_form.content }}
+          </div>
+          
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i> Post Comment
+          </button>
+        </form>
+        <hr>
+      {% endif %}
+
+      <!-- Comments List -->
+      <div class="comments-list">
+        {% for comment in item.comments.all %}
+          <div class="media mb-3 p-3 border rounded bg-light">
+            <div class="media-body">
+              <div class="d-flex justify-content-between align-items-start mb-2">
+                <h6 class="mt-0 mb-0">
+                  <i class="fas fa-user-circle text-primary mr-1"></i>
+                  <strong>{{ comment.user.username }}</strong>
+                  {% if comment.user == item.owner %}
+                    <span class="badge badge-warning badge-sm ml-2">Owner</span>
+                  {% endif %}
+                </h6>
+                <small class="text-muted">
+                  <i class="far fa-clock mr-1"></i>
+                  {{ comment.created_at|date:"M d, Y H:i" }}
+                </small>
+              </div>
+              <p class="mb-0 text-dark">{{ comment.content }}</p>
+            </div>
+          </div>
+        {% empty %}
+          <div class="text-center text-muted py-5">
+            <i class="far fa-comment-dots fa-3x mb-3 text-muted"></i>
+            <h6 class="text-muted">No comments yet</h6>
+            <p class="mb-0">Be the first to share your thoughts!</p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+{%endblock%}

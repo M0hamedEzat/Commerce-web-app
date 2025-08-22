@@ -1,0 +1,117 @@
+body {
+  padding: 10px;
+  background-color: #f8f9fa;
+}
+
+/* Auction Card Styles */
+.auction-card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.auction-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.auction-image {
+  height: 200px;
+  object-fit: cover;
+  border-top-left-radius: calc(0.25rem - 1px);
+  border-top-right-radius: calc(0.25rem - 1px);
+}
+
+.no-image {
+  height: 200px;
+  background-color: #e9ecef;
+  border-top-left-radius: calc(0.25rem - 1px);
+  border-top-right-radius: calc(0.25rem - 1px);
+}
+
+.card-title {
+  color: #343a40;
+  font-weight: 600;
+}
+
+.badge {
+  font-size: 0.8em;
+  padding: 0.4em 0.8em;
+}
+
+/* Navigation improvements */
+.nav {
+  background-color: #007bff;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+}
+
+.nav .nav-link {
+  color: white !important;
+  font-weight: 500;
+}
+
+.nav .nav-link:hover {
+  color: #ffc107 !important;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.25rem;
+}
+
+/* Page title */
+h1 {
+  color: #343a40;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+h2 {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* User info styling */
+body > div:first-of-type {
+  background-color: #e9ecef;
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+  font-size: 0.95em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .auction-image {
+    height: 150px;
+  }
+
+  body {
+    padding: 5px;
+  }
+}
+
+/* Price section styling */
+.price-section {
+  border: 1px solid #dee2e6;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.price-text {
+  font-size: 1.1em;
+  font-weight: 600;
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.price-section .text-success {
+  color: #28a745 !important;
+  text-shadow: 0 1px 2px rgba(40, 167, 69, 0.2);
+}
+
+.price-section .text-primary {
+  color: #007bff !important;
+}
+
+.price-section .text-secondary {
+  color: #6c757d !important;
+}
